@@ -2,6 +2,8 @@
 
 %global pkg_name pandoc-types
 
+%bcond_with tests
+
 Name:           ghc-%{pkg_name}
 Version:        1.17.0.4
 Release:        1%{?dist}
@@ -14,11 +16,19 @@ Source0:        https://hackage.haskell.org/package/%{pkg_name}-%{version}/%{pkg
 BuildRequires:  ghc-Cabal-devel
 BuildRequires:  ghc-rpm-macros
 # Begin cabal-rpm deps:
+BuildRequires:  ghc-QuickCheck-devel
 BuildRequires:  ghc-aeson-devel
 BuildRequires:  ghc-bytestring-devel
 BuildRequires:  ghc-containers-devel
 BuildRequires:  ghc-deepseq-generics-devel
 BuildRequires:  ghc-syb-devel
+%if %{with tests}
+BuildRequires:  ghc-HUnit-devel
+BuildRequires:  ghc-string-qq-devel
+BuildRequires:  ghc-test-framework-devel
+BuildRequires:  ghc-test-framework-hunit-devel
+BuildRequires:  ghc-test-framework-quickcheck2-devel
+%endif
 # End cabal-rpm deps
 
 %description
@@ -64,7 +74,9 @@ This package provides the Haskell %{pkg_name} library development files.
 %install
 %ghc_lib_install
 
-rm %{buildroot}%{ghc_pkgdocdir}/LICENSE
+
+%check
+%cabal_test
 
 
 %post devel
@@ -80,6 +92,7 @@ rm %{buildroot}%{ghc_pkgdocdir}/LICENSE
 
 
 %files devel -f %{name}-devel.files
+%doc changelog
 
 
 %changelog
